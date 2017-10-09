@@ -13,93 +13,49 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script>
-      var count = 1;
-      function expand(obj) {
-
-        for (prop in obj) {
-          value = obj[prop];
-          if (typeof value === 'object') {
-            document.getElementById("output").innerHTML += prop + " (object)<br>";
-            expand(value);
-          } else {
-            document.getElementById("output").innerHTML += prop + " (string)<br>";
-          }
-        }
-
-      }
-
-      function addElement(parentId, elementTag, elementId, elementClass, html) {
-        // Adds an element to the document
-        
-        var p = document.getElementById(parentId);
-        var newElement = document.createElement(elementTag);
-        newElement.setAttribute('id', elementId);
-        newElement.setAttribute('class',elementClass);
-        newElement.innerHTML = html;
-        p.appendChild(newElement);
-      }
-
-      function addPath() {
-
-        var h = "<div class=\"panel-heading\">\r\n            <h4 class=\"panel-title\">\r\n              <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse"+count+"\">Path "+count+"<\/a>\r\n            <\/h4>\r\n          <\/div>\r\n          <div id=\"collapse"+count+"\" class=\"panel-collapse collapse in\">\r\n            <div class=\"panel-body\">\r\n              <form id=\"json\">\r\n  \r\n                <textarea id=\"input\" placeholder=\"Enter payload here\" form=\"json\" style=\"width:500px; height:200px;\">\r\n                       \r\n                        {\r\n                          \"subscription\":{\r\n                            \"criteria\":\"SSH\",\r\n                            \"destinationAddress\":\"3456\",\r\n                            \"clientCorrelator\":\"123456:AIN12345\"\r\n                          }\r\n                        }\r\n                      <\/textarea>\r\n                <\/br>\r\n                <button class=\"button\" onclick=\"myFunction()\" type=\"button\">Parse<\/button>\r\n  \r\n              <\/form>\r\n            <\/div>\r\n          <\/div>";
-        addElement("paths", "div", "path" + count,"panel panel-default", h);
-        count++;
-      }
-
-      function IsJsonString(str) {
-        try {
-          JSON.parse(str);
-        } catch (e) {
-          console.log("Invalid JSON String");
-          return false;
-        }
-        return true;
-      }
-
-      function myFunction() {
-        var a = document.getElementById("input").value;
-        if (IsJsonString(a)) {
-
-          var json = JSON.parse(a);
-          document.getElementById("output").innerHTML = "";
-          expand(json);
-        }
-        else {
-          document.getElementById("output").innerHTML = "";
-        }
-      }
-    </script>
+    <script src="functions.js"></script>
 </head>
 
 <body>
 
+
   <div class="container">
+
     <h1>JSON to Swagger 2.0</h1>
     <label>Title:</label>
-    <input type="text" name="fname"><br>
+    <input type="text" name="fname">
+    <br>
     <br>
     <label>Version:</label>
-    <input type="text" name="fname"><br>
+    <input type="text" name="fname">
+    <br>
     <br>
     <label>Description:</label>
-    <input type="text" name="fname"><br>
+    <input type="text" name="fname">
+    <br>
     <br>
 
-    <div >
-      <button class="button" onclick="addPath()"><i class="fa fa-plus-circle" aria-hidden="true">&nbsp;Add Path</i></button>
-
+    <div>
+      <button class="button fa fa-plus-circle" onclick="addPath()">
+        Add Path
+      </button>
+      <input type="text" id="pathSpecifier" onclick="clearErrorMessage(this.id)" value="provision" />
+      <label id="pathSpecifierErrorLabel" />
     </div>
 
     <div id="paths" class="panel-group" id="accordion">
-      
+     
     </div>
 
-    <div id="test" class="collapse">
-        <p id="output"></p>
-        <p id="info"></p>
-      </div>
+   
+      <p id="output"></p>
+      <p id="info"></p>
+
+
+
+    
   </div>
+
 </body>
 
 </html>

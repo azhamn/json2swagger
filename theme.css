@@ -19,3 +19,7 @@
     display: inline-block;
     font-size: 16px;
 }
+
+.panelCloseButton:hover{
+    background-color: #dfdfdf;
+}
