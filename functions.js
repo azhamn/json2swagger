@@ -1,28 +1,174 @@
 var count = 1;
 var pathList = new Array();
-function expand(obj) {
 
+$(document)
+.one('focus.autoExpand', 'textarea.autoExpand', function(){
+    var savedValue = this.value;
+    this.value = '';
+    this.baseScrollHeight = this.scrollHeight;
+    this.value = savedValue;
+})
+.on('input.autoExpand', 'textarea.autoExpand', function(){
+    var minRows = this.getAttribute('data-min-rows')|0, rows;
+    this.rows = minRows;
+    rows = Math.ceil((this.scrollHeight - this.baseScrollHeight) / 17);
+    this.rows = minRows + rows;
+});
+
+function expand(obj, path) {
+    var e = path + "Col-2";
     for (prop in obj) {
         value = obj[prop];
         if (typeof value === 'object') {
-            document.getElementById("output").innerHTML += prop + " (object)<br>";
-            expand(value);
+            // document.getElementById(e).innerHTML += prop + " (object)<br>";
+            expand(value, path);
         } else {
-            document.getElementById("output").innerHTML += prop + " (string)<br>";
+            // document.getElementById(e).innerHTML += prop + " (string)<br>";
+
+            addInputElement(e, "checkbox", path + prop, "", prop);
+            // addElement(e,"button","testButton","",null);
         }
     }
 
 }
 
+function createElement(elementTag, elementId, elementClass, html) {
+
+    var newElement = document.createElement(elementTag);
+
+    if (elementClass != null) {
+        newElement.setAttribute('class', elementClass);
+    }
+    if (elementId != null) {
+        newElement.setAttribute('id', elementId);
+    }
+    if (html != null) {
+        newElement.innerHTML = html;
+    }
+
+    return newElement;
+}
+
 function addElement(parentId, elementTag, elementId, elementClass, html) {
     // Adds an element to the document
 
+    // var p = document.getElementById(parentId);
+    // var newElement = document.createElement(elementTag);
+    // newElement.setAttribute('id', elementId);
+    // newElement.setAttribute('class', elementClass);
+    // newElement.innerHTML = html;
+    // p.appendChild(newElement);
+
     var p = document.getElementById(parentId);
     var newElement = document.createElement(elementTag);
-    newElement.setAttribute('id', elementId);
-    newElement.setAttribute('class', elementClass);
-    newElement.innerHTML = html;
+
+    if (elementClass != null) {
+        newElement.setAttribute('class', elementClass);
+    }
+    if (elementId != null) {
+        newElement.setAttribute('id', elementId);
+    }
+    if (html != null) {
+        newElement.innerHTML = html;
+    }
+
     p.appendChild(newElement);
+}
+
+function OuterHTML(element) {
+    var container = document.createElement("div");
+    container.appendChild(element.cloneNode(true));
+
+    return container.innerHTML;
+}
+
+function addInputElement(parentId, type, elementId, elementClass, label) {
+    //     elementId+=type;
+    //     var p = document.getElementById(parentId);
+    //     var newInputElement = document.createElement("input");
+    //     newInputElement.setAttribute('type', type);
+    //     newInputElement.setAttribute('id', elementId);
+    //     newInputElement.setAttribute('class', elementClass);
+
+    //     var l = document.createElement("label");
+    //     l.innerHTML = label + ": ";
+    //     l.appendChild(newInputElement);
+
+    //    p.appendChild(l);
+    //    p.innerHTML+="<br>";
+
+    elementId += type;
+    var p = document.getElementById(parentId);
+    var l = createElement("label", null, null, label);
+
+    var c1 = createElement("div", null, "col-sm-12", OuterHTML(l));
+    var r1 = createElement("div", null, "row", OuterHTML(c1));
+
+    var r2c1 = createElement("div", null, "col-sm-1", null);
+    var r2c2 = createElement("div", null, "col-sm-11", null);
+
+    r2c2.innerHTML += "Mandotory: ";
+
+    var cb = createElement("input", null, null, null);
+    cb.type = "checkbox";
+
+    r2c2.appendChild(cb);
+    r2c2.innerHTML += "<br>Data Type: ";
+
+    var selector = createElement("select",null,"selectpicker",null);
+    
+    selector.appendChild(createElement("option",null,null,"String"));
+    selector.appendChild(createElement("option",null,null,"Integer"));
+
+    r2c2.appendChild(selector);
+
+    r2c2.innerHTML += "<br>Description";
+
+    var ta = createElement("textarea",null,"autoExpand",null);
+    ta.setAttribute("rows","2");
+    ta.setAttribute("data-min-rows","2");
+    ta.setAttribute("style","width:100%;resize: none;");
+    ta.setAttribute("placeholder","Enter description here...");
+
+    r2c2.appendChild(ta);
+
+    var r2 = createElement("div", null, "row", "");
+    r2.appendChild(r2c1);
+    r2.appendChild(r2c2);
+
+    
+
+
+    // var r3 = createElement("div", null, "row", "");
+    // var r3c2 = createElement("div", null, "col-sm-11", null);
+
+    // l2 = createElement("label", null, null, "Description:");
+    // r3c2.appendChild(l2);
+
+    // r3.appendChild(r2c1);
+    // r3.appendChild(r3c2);
+
+    p.appendChild(r1);
+    p.appendChild(r2);
+    // p.appendChild(r3);
+
+
+    // addElement(p.id, "div", null, "row", OuterHTML(r1));
+
+    // p.appendChild(l);
+    // p.innerHTML += "<br>";
+
+    // var newInputElement = document.createElement("input");
+    // newInputElement.setAttribute('type', type);
+    // newInputElement.setAttribute('id', elementId);
+    // newInputElement.setAttribute('class', elementClass);
+
+
+    // l.appendChild(newInputElement);
+
+
+    // p.innerHTML += "<br>";
+
 }
 
 function showError(inputID, ErrorLabel) {
@@ -30,13 +176,13 @@ function showError(inputID, ErrorLabel) {
     document.getElementById(errorLabelID).innerText = ErrorLabel;
 }
 
-function deletePath(a){
-  var response =  confirm("Are you sure you want to delete " + a + "?");
-  if(response){
-    var elem = document.getElementById(a+"Path");
-    elem.parentNode.removeChild(elem);
-    pathList.pop(a);
-  }
+function deletePath(a) {
+    var response = confirm("Are you sure you want to delete " + a + "?");
+    if (response) {
+        var elem = document.getElementById(a + "Path");
+        elem.parentNode.removeChild(elem);
+        pathList.pop(a);
+    }
 }
 
 function addPath() {
@@ -60,12 +206,12 @@ function addPath() {
         pathList.push(path);
     }
 
-    
+
     var h = "<div class=\"panel-heading\"> \n \
     <div class=\"row\">\
       <div class=\"col-sm-11\"> \
         <h4 class=\"panel-title\">\n  \
-          <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" +count+ "\">"+path+"</a>\n  \
+          <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" + count + "\">" + path + "</a>\n  \
         </h4>\
       </div>\
       <div class=\"col-sm-1\">\n  \
@@ -75,23 +221,25 @@ function addPath() {
   </div > \
   <div id=\"collapse"+ count + "\" class=\"panel-collapse collapse in\"> \n \
   <div class=\"panel-body\"> \n \
+  <div class=\"row\"> \
     <form id=\""+ path + "form\">\n \
-    <textarea id=\""+ path + "JsonInput\" placeholder=\"Enter payload here\" form=\"json\" style=\"width:500px; height:200px;\">\n \
-    {\n \
-    \"subscription\":{\n \
-    \"criteria\":\"SSH\",\n \
-    \"destinationAddress\":\"3456\",\n \
-    \"clientCorrelator\":\"123456:AIN12345\"\n \
-    }\n \
-    }\n \
+    <div id=\""+ path + "Col-1\" class=\"col-sm-6\"> \
+    <textarea id=\""+ path + "JsonInput\" class='autoExpand' rows='5' data-min-rows='5' placeholder=\"Enter payload here\" form=\"json\" style=\"width:100%;resize: none;\">\n \
     </textarea>\n \
     </br>\n \
-    <button class=\"button\" onclick=\"myFunction(\'"+ path + "\')\" type=\"button\">Parse</button>\n \
+    <button class=\"button\" onclick=\"myFunction(\'"+ path + "\')\" type=\"button\" style=\"width:100%;\">Parse</button>\n \
+    </div>\
+    <div id=\""+ path + "Col-2\" class=\"col-sm-6\"> \
+    </div> \
+</div> \
     </form> \n \
+    </div>\
   </div>\
   </div>";
-    addElement("paths", "div", path+"Path", "panel panel-default", h);
+    addElement("paths", "div", path + "Path", "panel panel-default", h);
     count++;
+
+    document.getElementById(path+"JsonInput").innerHTML = "{\r\n\t\"subscription\": {\r\n\t\t\"criteria\": \"SSH\",\r\n\t\t\"destinationAddress\": \"3456\",\r\n\t\t\"clientCorrelator\": \"123456:AIN12345\"\r\n\t}\r\n}";
 }
 
 function clearErrorMessage(a) {
@@ -114,10 +262,15 @@ function myFunction(path) {
 
         var json = JSON.parse(a);
         document.getElementById(path + "JsonInput").value = JSON.stringify(json, null, "\t");
-        document.getElementById("output").innerHTML = "";
-        expand(json);
+        document.getElementById(path + "Col-2").innerHTML = "";
+        console.log(path);
+        expand(json, path);
     }
     else {
-        document.getElementById("output").innerHTML = "";
+        document.getElementById(path + "Col-2").innerHTML = "";
     }
+}
+
+function createFormElement() {
+    document.write("testing testing testing");
 }
