@@ -1,20 +1,6 @@
 var count = 1;
 var pathList = new Array();
 
-$(document)
-.one('focus.autoExpand', 'textarea.autoExpand', function(){
-    var savedValue = this.value;
-    this.value = '';
-    this.baseScrollHeight = this.scrollHeight;
-    this.value = savedValue;
-})
-.on('input.autoExpand', 'textarea.autoExpand', function(){
-    var minRows = this.getAttribute('data-min-rows')|0, rows;
-    this.rows = minRows;
-    rows = Math.ceil((this.scrollHeight - this.baseScrollHeight) / 17);
-    this.rows = minRows + rows;
-});
-
 function expand(obj, path) {
     var e = path + "Col-2";
     for (prop in obj) {
@@ -115,28 +101,26 @@ function addInputElement(parentId, type, elementId, elementClass, label) {
     r2c2.appendChild(cb);
     r2c2.innerHTML += "<br>Data Type: ";
 
-    var selector = createElement("select",null,"selectpicker",null);
-    
-    selector.appendChild(createElement("option",null,null,"String"));
-    selector.appendChild(createElement("option",null,null,"Integer"));
+    var selector = createElement("select", null, "selectpicker", null);
+
+    selector.appendChild(createElement("option", null, null, "String"));
+    selector.appendChild(createElement("option", null, null, "Integer"));
 
     r2c2.appendChild(selector);
 
     r2c2.innerHTML += "<br>Description";
 
-    var ta = createElement("textarea",null,"autoExpand",null);
-    ta.setAttribute("rows","2");
-    ta.setAttribute("data-min-rows","2");
-    ta.setAttribute("style","width:100%;resize: none;");
-    ta.setAttribute("placeholder","Enter description here...");
+    var ta = createElement("textarea", null, "autoExpand", null);
+    ta.setAttribute("rows", "2");
+    ta.setAttribute("data-min-rows", "2");
+    ta.setAttribute("style", "width:100%;resize: none;");
+    ta.setAttribute("placeholder", "Enter description here...");
 
     r2c2.appendChild(ta);
 
     var r2 = createElement("div", null, "row", "");
     r2.appendChild(r2c1);
     r2.appendChild(r2c2);
-
-    
 
 
     // var r3 = createElement("div", null, "row", "");
@@ -215,21 +199,21 @@ function addPath() {
         </h4>\
       </div>\
       <div class=\"col-sm-1\">\n  \
-        <i onclick=\"deletePath(\'"+ path + "\')\" class=\"pull-right fa fa-trash-o panelCloseButton\" aria-hidden=\"true\"></i>\n \
+        <i onclick=\"deletePath(\'" + path + "\')\" class=\"pull-right fa fa-trash-o panelCloseButton\" aria-hidden=\"true\"></i>\n \
       </div>\
     </div> \
   </div > \
-  <div id=\"collapse"+ count + "\" class=\"panel-collapse collapse in\"> \n \
+  <div id=\"collapse" + count + "\" class=\"panel-collapse collapse in\"> \n \
   <div class=\"panel-body\"> \n \
   <div class=\"row\"> \
-    <form id=\""+ path + "form\">\n \
-    <div id=\""+ path + "Col-1\" class=\"col-sm-6\"> \
-    <textarea id=\""+ path + "JsonInput\" class='autoExpand' rows='5' data-min-rows='5' placeholder=\"Enter payload here\" form=\"json\" style=\"width:100%;resize: none;\">\n \
+    <form id=\"" + path + "form\">\n \
+    <div id=\"" + path + "Col-1\" class=\"col-sm-6\"> \
+    <textarea id=\"" + path + "JsonInput\" class='autoExpand' rows='5' data-min-rows='5' placeholder=\"Enter payload here\" form=\"json\" style=\"width:100%;resize: none;\">\n \
     </textarea>\n \
     </br>\n \
-    <button class=\"button\" onclick=\"myFunction(\'"+ path + "\')\" type=\"button\" style=\"width:100%;\">Parse</button>\n \
+    <button class=\"button\" onclick=\"myFunction(\'" + path + "\')\" type=\"button\" style=\"width:100%;\">Parse</button>\n \
     </div>\
-    <div id=\""+ path + "Col-2\" class=\"col-sm-6\"> \
+    <div id=\"" + path + "Col-2\" class=\"col-sm-6\"> \
     </div> \
 </div> \
     </form> \n \
@@ -239,7 +223,10 @@ function addPath() {
     addElement("paths", "div", path + "Path", "panel panel-default", h);
     count++;
 
-    document.getElementById(path+"JsonInput").innerHTML = "{\r\n\t\"subscription\": {\r\n\t\t\"criteria\": \"SSH\",\r\n\t\t\"destinationAddress\": \"3456\",\r\n\t\t\"clientCorrelator\": \"123456:AIN12345\"\r\n\t}\r\n}";
+    document.getElementById(path + "JsonInput").innerHTML = "{\r\n\t\"subscription\": {\r\n\t\t\"criteria\": \"SSH\",\r\n\t\t\"destinationAddress\": \"3456\",\r\n\t\t\"clientCorrelator\": \"123456:AIN12345\"\r\n\t}\r\n}";
+
+    resizeTextArea();
+
 }
 
 function clearErrorMessage(a) {
@@ -262,6 +249,8 @@ function myFunction(path) {
 
         var json = JSON.parse(a);
         document.getElementById(path + "JsonInput").value = JSON.stringify(json, null, "\t");
+        document.getElementById(path + "JsonInput").style.height = 'auto';
+        document.getElementById(path + "JsonInput").style.height = (document.getElementById(path + "JsonInput").scrollHeight) + 'px';
         document.getElementById(path + "Col-2").innerHTML = "";
         console.log(path);
         expand(json, path);
@@ -269,6 +258,24 @@ function myFunction(path) {
     else {
         document.getElementById(path + "Col-2").innerHTML = "";
     }
+
+}
+
+// To adjust the text area dynamically according to the data
+function resizeTextArea() {
+
+    var tx = document.getElementsByTagName('textarea');
+
+    for (var i = 0; i < tx.length; i++) {
+        tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;width:100%;resize:none;');
+        tx[i].addEventListener("input", resize, false);
+    }
+
+    function resize() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    }
+
 }
 
 function createFormElement() {

@@ -1,2 +1,2 @@
-# json2swagger
-Experimental project to produce swagger definition from json payload
+# Json2Swagger
+Experimental project to produce swagger definition from json payload !
