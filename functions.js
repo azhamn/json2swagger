@@ -1,20 +1,6 @@
 var count = 1;
 var pathList = new Array();
 
-$(document)
-    .one('focus.autoExpand', 'textarea.autoExpand', function () {
-        var savedValue = this.value;
-        this.value = '';
-        this.baseScrollHeight = this.scrollHeight;
-        this.value = savedValue;
-    })
-    .on('input.autoExpand', 'textarea.autoExpand', function () {
-        var minRows = this.getAttribute('data-min-rows') | 0, rows;
-        this.rows = minRows;
-        rows = Math.ceil((this.scrollHeight - this.baseScrollHeight) / 17);
-        this.rows = minRows + rows;
-    });
-
 function expand(obj, path) {
     var e = path + "Col-2";
     for (prop in obj) {
@@ -238,6 +224,9 @@ function addPath() {
     count++;
 
     document.getElementById(path + "JsonInput").innerHTML = "{\r\n\t\"subscription\": {\r\n\t\t\"criteria\": \"SSH\",\r\n\t\t\"destinationAddress\": \"3456\",\r\n\t\t\"clientCorrelator\": \"123456:AIN12345\"\r\n\t}\r\n}";
+
+    addResizeTextAreaListener();
+
 }
 
 function clearErrorMessage(a) {
@@ -260,6 +249,8 @@ function myFunction(path) {
 
         var json = JSON.parse(a);
         document.getElementById(path + "JsonInput").value = JSON.stringify(json, null, "\t");
+        document.getElementById(path + "JsonInput").style.height = 'auto';
+        document.getElementById(path + "JsonInput").style.height = (document.getElementById(path + "JsonInput").scrollHeight) + 'px';
         document.getElementById(path + "Col-2").innerHTML = "";
         console.log(path);
         expand(json, path);
@@ -267,6 +258,24 @@ function myFunction(path) {
     else {
         document.getElementById(path + "Col-2").innerHTML = "";
     }
+
+}
+
+// To add the event listener to adjust the text area dynamically according to the data
+function addResizeTextAreaListener() {
+
+    var tx = document.getElementsByTagName('textarea');
+
+    for (var i = 0; i < tx.length; i++) {
+        tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;width:100%;resize:none;');
+        tx[i].addEventListener("input", resizeTextArea, false);
+    }
+
+    function resizeTextArea() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    }
+
 }
 
 function createFormElement() {
