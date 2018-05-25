@@ -101,7 +101,7 @@ function addInputElement(parentId, type, elementId, elementClass, label) {
 
     r2c2.innerHTML += "<br>Data Type: ";
 
-    var selector = createElement("select", elementId + "option", "selectpicker", null);
+    var selector = createElement("select", elementId + "select", "selectpicker", null);
 
     selector.appendChild(createElement("option", null, null, "String"));
     selector.appendChild(createElement("option", null, null, "Integer"));
