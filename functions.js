@@ -3,8 +3,8 @@ var pathList = new Array();
 
 function expand(obj, path) {
     var e = path + "Col-2";
-    for (prop in obj) {
-        value = obj[prop];
+    for (let prop in obj) {
+        let value = obj[prop];
         if (typeof value === 'object') {
             // document.getElementById(e).innerHTML += prop + " (object)<br>";
             expand(value, path);
@@ -83,7 +83,6 @@ function addInputElement(parentId, type, elementId, elementClass, label) {
     //    p.appendChild(l);
     //    p.innerHTML+="<br>";
 
-    elementId += type;
     var p = document.getElementById(parentId);
     var l = createElement("label", null, null, label);
 
@@ -97,8 +96,9 @@ function addInputElement(parentId, type, elementId, elementClass, label) {
 
     var cb = createElement("input", null, null, null);
     cb.type = "checkbox";
-
+    cb.setAttribute('id', elementId + "checkbox");
     r2c2.appendChild(cb);
+
     r2c2.innerHTML += "<br>Data Type: ";
 
     var selector = createElement("select", null, "selectpicker", null);
